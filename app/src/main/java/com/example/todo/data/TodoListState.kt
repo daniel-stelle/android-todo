@@ -1,15 +1,20 @@
 package com.example.todo.data
 
-import androidx.compose.ui.text.input.TextFieldValue
-
 data class TodoListState(
     val todoItems: List<TodoItem>,
-    val newItemText: TextFieldValue,
+    val newItemText: String,
 ) {
-    fun addItem(item: TodoItem) = this.copy(todoItems = todoItems + item)
-    fun updateNewItemText(newItemText: TextFieldValue) = this.copy(newItemText = newItemText)
+    fun addItem(item: TodoItem) = this.copy(
+        todoItems = todoItems + item,
+        newItemText = ""
+    )
+    fun updateItem(item: TodoItem) = this.copy(
+        todoItems = todoItems.map { if (it.guid == item.guid) item else it }
+    )
+
+    fun updateNewItemText(newItemText: String) = this.copy(newItemText = newItemText)
 
     companion object {
-        val EMPTY = TodoListState(emptyList(), TextFieldValue())
+        val EMPTY = TodoListState(emptyList(), "")
     }
 }

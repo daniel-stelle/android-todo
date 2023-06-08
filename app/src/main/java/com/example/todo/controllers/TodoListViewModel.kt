@@ -13,13 +13,15 @@ class TodoListViewModel: ViewModel() {
     val todoListState: StateFlow<TodoListState> = _todoListState
 
     fun addItem() {
-        val newItem = TodoItem(_todoListState.value.newItemText.text)
-
-        onNewItemTextChange(TextFieldValue())
+        val newItem = TodoItem(_todoListState.value.newItemText)
         _todoListState.update { it.addItem(newItem) }
     }
 
-    fun onNewItemTextChange(newTextFieldValue: TextFieldValue) {
+    fun onNewItemTextChange(newTextFieldValue: String) {
         _todoListState.update { it.updateNewItemText(newTextFieldValue) }
+    }
+
+    fun onItemUpdated(item: TodoItem) {
+        _todoListState.update { it.updateItem(item) }
     }
 }
