@@ -1,5 +1,6 @@
 package com.example.todo.screens
 
+import android.content.res.Resources.Theme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,6 +14,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -44,18 +46,20 @@ fun TodoListScreen(
         state = todoListState.value,
         onNewItemTextChange = viewModel::onNewItemTextChange,
         addNewItem = viewModel::addItem,
-        onItemUpdated = viewModel::onItemUpdated
+        onItemUpdated = viewModel::onItemUpdated,
+        onDeleteItem = viewModel::onItemDeleted
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodoListScreen(
-    modifier: Modifier = Modifier,
     state: TodoListState,
     onNewItemTextChange: (String) -> Unit,
     addNewItem: () -> Unit,
-    onItemUpdated: (TodoItem) -> Unit
+    onItemUpdated: (TodoItem) -> Unit,
+    onDeleteItem: (TodoItem) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Scaffold(
         modifier,
@@ -68,7 +72,8 @@ fun TodoListScreen(
             todoListState = state,
             onNewItemTextChange = onNewItemTextChange,
             addNewItem = addNewItem,
-            onItemUpdated = onItemUpdated
+            onItemUpdated = onItemUpdated,
+            onDeleteItem = onDeleteItem
         )
     }
 }
@@ -76,11 +81,12 @@ fun TodoListScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodoListContainer(
-    modifier: Modifier = Modifier,
     todoListState: TodoListState,
     onNewItemTextChange: (String) -> Unit,
     addNewItem: () -> Unit,
-    onItemUpdated: (TodoItem) -> Unit
+    onItemUpdated: (TodoItem) -> Unit,
+    onDeleteItem: (TodoItem) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     var showNewItemField by remember { mutableStateOf(false) }
 
@@ -91,9 +97,15 @@ fun TodoListContainer(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(todoListState.todoItems, { it.guid }) { item ->
-                TodoCard(todoItem = item) { completed ->
-                    onItemUpdated(item.copy(completed = completed))
-                }
+                TodoCard(
+                    todoItem = item,
+                    onCheckChanged = { completed ->
+                        onItemUpdated(item.copy(completed = completed))
+                    },
+                    onDeleteItem = {
+                        onDeleteItem(item)
+                    }
+                )
             }
 
             if (showNewItemField) {
@@ -135,5 +147,5 @@ private fun TodoListScreenPreview() {
     )
     val state = TodoListState(items, "")
 
-//    TodoListScreen(state = state, onNewItemTextChange = {}, {}) {}
+    TodoListScreen(state = state, onNewItemTextChange = {}, {}, {}, {})
 }

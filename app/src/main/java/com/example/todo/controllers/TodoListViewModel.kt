@@ -15,8 +15,8 @@ import kotlinx.coroutines.launch
 
 class TodoListViewModel(application: Application) : AndroidViewModel(application) {
     private val _todoListState = MutableStateFlow(TodoListState.EMPTY)
-    private val db: TodoDatabase = (application as TodoApplication).todoDB
     val todoListState: StateFlow<TodoListState> = _todoListState
+    private val db: TodoDatabase = (application as TodoApplication).todoDB
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -30,6 +30,12 @@ class TodoListViewModel(application: Application) : AndroidViewModel(application
         val newItem = TodoItem(_todoListState.value.newItemText)
         viewModelScope.launch(Dispatchers.IO) {
             db.todoDao().upsertTodoItem(newItem)
+        }
+    }
+
+    fun onItemDeleted(item: TodoItem) {
+        viewModelScope.launch(Dispatchers.IO) {
+            db.todoDao().deleteTodoItem(item)
         }
     }
 

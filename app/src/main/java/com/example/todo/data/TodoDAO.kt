@@ -2,6 +2,7 @@ package com.example.todo.data
 
 import androidx.room.Dao
 import androidx.room.Database
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -15,6 +16,9 @@ interface TodoDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun upsertTodoItem(vararg todoItems: TodoItem)
+
+    @Delete
+    fun deleteTodoItem(item: TodoItem)
 }
 
 @Database(
