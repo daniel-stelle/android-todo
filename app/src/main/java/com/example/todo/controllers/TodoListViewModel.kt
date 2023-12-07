@@ -33,6 +33,17 @@ class TodoListViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+    fun onItemUpdated(item: TodoItem) {
+        if (item.text.isBlank()) {
+            onItemDeleted(item)
+            return
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            db.todoDao().upsertTodoItem(item)
+        }
+    }
+
     fun onItemDeleted(item: TodoItem) {
         viewModelScope.launch(Dispatchers.IO) {
             db.todoDao().deleteTodoItem(item)
@@ -43,7 +54,4 @@ class TodoListViewModel(application: Application) : AndroidViewModel(application
         _todoListState.update { it.updateNewItemText(newTextFieldValue) }
     }
 
-    fun onItemUpdated(item: TodoItem) {
-        _todoListState.update { it.updateItem(item) }
-    }
 }

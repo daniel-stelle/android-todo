@@ -1,23 +1,17 @@
 package com.example.todo.screens
 
-import android.content.res.Resources.Theme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -27,7 +21,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.todo.components.TodoCard
@@ -44,8 +37,6 @@ fun TodoListScreen(
     TodoListScreen(
         modifier = modifier,
         state = todoListState.value,
-        onNewItemTextChange = viewModel::onNewItemTextChange,
-        addNewItem = viewModel::addItem,
         onItemUpdated = viewModel::onItemUpdated,
         onDeleteItem = viewModel::onItemDeleted
     )
@@ -55,8 +46,6 @@ fun TodoListScreen(
 @Composable
 fun TodoListScreen(
     state: TodoListState,
-    onNewItemTextChange: (String) -> Unit,
-    addNewItem: () -> Unit,
     onItemUpdated: (TodoItem) -> Unit,
     onDeleteItem: (TodoItem) -> Unit,
     modifier: Modifier = Modifier
@@ -70,8 +59,6 @@ fun TodoListScreen(
         TodoListContainer(
             modifier = Modifier.padding(it),
             todoListState = state,
-            onNewItemTextChange = onNewItemTextChange,
-            addNewItem = addNewItem,
             onItemUpdated = onItemUpdated,
             onDeleteItem = onDeleteItem
         )
@@ -82,8 +69,6 @@ fun TodoListScreen(
 @Composable
 fun TodoListContainer(
     todoListState: TodoListState,
-    onNewItemTextChange: (String) -> Unit,
-    addNewItem: () -> Unit,
     onItemUpdated: (TodoItem) -> Unit,
     onDeleteItem: (TodoItem) -> Unit,
     modifier: Modifier = Modifier
@@ -99,26 +84,17 @@ fun TodoListContainer(
             items(todoListState.todoItems, { it.guid }) { item ->
                 TodoCard(
                     todoItem = item,
-                    onCheckChanged = { completed ->
-                        onItemUpdated(item.copy(completed = completed))
-                    },
-                    onDeleteItem = {
-                        onDeleteItem(item)
-                    }
+                    onChanged = { todoItem -> onItemUpdated(todoItem) },
+                    onDeleteItem = { onDeleteItem(item) }
                 )
             }
 
             if (showNewItemField) {
                 item {
-                    TextField(
-                        modifier = modifier.fillMaxWidth(),
-                        value = todoListState.newItemText,
-                        onValueChange = onNewItemTextChange,
-                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                        keyboardActions = KeyboardActions(onDone = {
-                            addNewItem()
-                            showNewItemField = false
-                        })
+                    TodoCard(
+                        todoItem = TodoItem(),
+                        onChanged = onItemUpdated,
+                        onDeleteItem = { showNewItemField = false }
                     )
                 }
             }
@@ -147,5 +123,5 @@ private fun TodoListScreenPreview() {
     )
     val state = TodoListState(items, "")
 
-    TodoListScreen(state = state, onNewItemTextChange = {}, {}, {}, {})
+    TodoListScreen(state = state, {}, {})
 }
