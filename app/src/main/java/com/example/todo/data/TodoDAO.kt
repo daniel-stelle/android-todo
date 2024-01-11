@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TodoDAO {
-    @Query("SELECT * FROM TodoItem")
+    @Query("SELECT * FROM TodoItem ORDER BY createdAt")
     fun getTodoItems(): Flow<List<TodoItem>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

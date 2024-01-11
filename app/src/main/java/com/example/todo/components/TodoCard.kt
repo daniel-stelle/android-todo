@@ -1,6 +1,7 @@
 package com.example.todo.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Row
@@ -23,10 +24,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.todo.R
@@ -37,22 +41,27 @@ import com.example.todo.data.TodoItem
 fun TodoCard(
     modifier: Modifier = Modifier,
     todoItem: TodoItem,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    focusRequester: FocusRequester = remember { FocusRequester() },
     onChanged: (TodoItem) -> Unit,
     onDeleteItem: () -> Unit
 ) {
     var todoText by remember { mutableStateOf(todoItem.text) }
-    val interactionSource = remember { MutableInteractionSource() }
     val focused by interactionSource.collectIsFocusedAsState()
     var initialized by remember { mutableStateOf(false) }
 
-    // TODO: Fix new todo text field not auto focusing when new item button clicked
-    // TODO: Add sort - Sort by timestamp or alphabetically
-    // TODO: Move checked items to the bottom/Add toggle for showing or hiding checked
+    // TODO: Add sort - Sort alphabetically
     // TODO: Swipe to delete
+    // TODO: Move checked items to the bottom/Add toggle for showing or hiding checked
+    // TODO: Add ability to click TodoListScreen to unfocus active text field
 
     LaunchedEffect(key1 = focused) {
         if (!focused && initialized) {
-            onChanged(todoItem.copy(text = todoText))
+            if (todoText.isBlank()) {
+                onDeleteItem()
+            } else {
+                onChanged(todoItem.copy(text = todoText))
+            }
         }
 
         initialized = true
@@ -70,7 +79,7 @@ fun TodoCard(
                 onCheckedChange = { onChanged(todoItem.copy(completed = it)) }
             )
             TextField(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).focusRequester(focusRequester),
                 value = todoText,
                 onValueChange = { todoText = it },
                 singleLine = true,
@@ -79,7 +88,10 @@ fun TodoCard(
                     unfocusedIndicatorColor = Color.Transparent
                 ),
                 interactionSource = interactionSource,
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Done,
+                    capitalization = KeyboardCapitalization.Sentences
+                ),
                 keyboardActions = KeyboardActions(onDone = {
                     onChanged(todoItem.copy(text = todoText))
                 })
