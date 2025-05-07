@@ -1,4 +1,4 @@
-package com.example.todo
+package com.example.prayerly
 
 import org.junit.Test
 

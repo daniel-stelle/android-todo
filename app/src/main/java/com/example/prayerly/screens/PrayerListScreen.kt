@@ -1,8 +1,5 @@
-package com.example.todo.screens
+package com.example.prayerly.screens
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.focusable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -26,23 +23,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.todo.components.TodoCard
-import com.example.todo.controllers.TodoListViewModel
-import com.example.todo.data.TodoItem
-import com.example.todo.data.TodoListState
+import com.example.prayerly.components.PrayerCard
+import com.example.prayerly.controllers.PrayerListViewModel
+import com.example.prayerly.data.PrayerItem
+import com.example.prayerly.data.PrayerListState
 
 @Composable
-fun TodoListScreen(
-    viewModel: TodoListViewModel,
+fun PrayerListScreen(
+    viewModel: PrayerListViewModel,
     modifier: Modifier = Modifier
 ) {
-    val todoListState = viewModel.todoListState.collectAsState()
-    TodoListScreen(
+    val prayerListState = viewModel.prayerListState.collectAsState()
+    PrayerListScreen(
         modifier = modifier,
-        state = todoListState.value,
+        state = prayerListState.value,
         onItemUpdated = viewModel::onItemUpdated,
         onDeleteItem = viewModel::onItemDeleted
     )
@@ -50,23 +46,23 @@ fun TodoListScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TodoListScreen(
-    state: TodoListState,
-    onItemUpdated: (TodoItem) -> Unit,
-    onDeleteItem: (TodoItem) -> Unit,
+fun PrayerListScreen(
+    state: PrayerListState,
+    onItemUpdated: (PrayerItem) -> Unit,
+    onDeleteItem: (PrayerItem) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
         modifier,
         topBar = {
-            TopAppBar(title = { Text(text = "My Todo List") })
+            TopAppBar(title = { Text(text = "My prayer List") })
         }
     ) {
         val focusRequester = remember { FocusRequester() }
 
-        TodoListContainer(
+        PrayerListContainer(
             modifier = Modifier.padding(it),
-            todoListState = state,
+            prayerListState = state,
             onItemUpdated = onItemUpdated,
             onDeleteItem = onDeleteItem
         )
@@ -74,10 +70,10 @@ fun TodoListScreen(
 }
 
 @Composable
-fun TodoListContainer(
-    todoListState: TodoListState,
-    onItemUpdated: (TodoItem) -> Unit,
-    onDeleteItem: (TodoItem) -> Unit,
+fun PrayerListContainer(
+    prayerListState: PrayerListState,
+    onItemUpdated: (PrayerItem) -> Unit,
+    onDeleteItem: (PrayerItem) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showNewItemField by remember { mutableStateOf(false) }
@@ -88,10 +84,10 @@ fun TodoListContainer(
             contentPadding = PaddingValues(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(todoListState.todoItems, { it.guid }) { item ->
-                TodoCard(
-                    todoItem = item,
-                    onChanged = { todoItem -> onItemUpdated(todoItem) },
+            items(prayerListState.prayerItems, { it.guid }) { item ->
+                PrayerCard(
+                    prayerItem = item,
+                    onChanged = { prayerItem -> onItemUpdated(prayerItem) },
                     onDeleteItem = { onDeleteItem(item) }
                 )
             }
@@ -104,8 +100,8 @@ fun TodoListContainer(
                         focusRequester.requestFocus()
                     }
 
-                    TodoCard(
-                        todoItem = TodoItem(),
+                    PrayerCard(
+                        prayerItem = PrayerItem(),
                         onChanged = onItemUpdated,
                         focusRequester = focusRequester,
                         onDeleteItem = { showNewItemField = false }
@@ -128,14 +124,14 @@ fun TodoListContainer(
 
 @Preview
 @Composable
-private fun TodoListScreenPreview() {
+private fun PrayerListScreenPreview() {
     val items = listOf(
-        TodoItem(guid = "1", text = "Mow the lawn", completed = false),
-        TodoItem(guid = "2", text = "Brush my hair", completed = false),
-        TodoItem(guid = "3", text = "Pet the dog", completed = true),
-        TodoItem(guid = "4", text = "Put away dishes", completed = false)
+        PrayerItem(guid = "1", text = "Mow the lawn", completed = false),
+        PrayerItem(guid = "2", text = "Brush my hair", completed = false),
+        PrayerItem(guid = "3", text = "Pet the dog", completed = true),
+        PrayerItem(guid = "4", text = "Put away dishes", completed = false)
     )
-    val state = TodoListState(items, "")
+    val state = PrayerListState(items, "")
 
-    TodoListScreen(state = state, {}, {})
+    PrayerListScreen(state = state, {}, {})
 }

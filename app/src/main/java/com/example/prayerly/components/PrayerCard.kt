@@ -1,7 +1,6 @@
-package com.example.todo.components
+package com.example.prayerly.components
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Row
@@ -33,34 +32,37 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.todo.R
-import com.example.todo.data.TodoItem
+import com.example.prayerly.R
+import com.example.prayerly.data.PrayerItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TodoCard(
+fun PrayerCard(
     modifier: Modifier = Modifier,
-    todoItem: TodoItem,
+    prayerItem: PrayerItem,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     focusRequester: FocusRequester = remember { FocusRequester() },
-    onChanged: (TodoItem) -> Unit,
+    onChanged: (PrayerItem) -> Unit,
     onDeleteItem: () -> Unit
 ) {
-    var todoText by remember { mutableStateOf(todoItem.text) }
+    var prayerText by remember { mutableStateOf(prayerItem.text) }
     val focused by interactionSource.collectIsFocusedAsState()
     var initialized by remember { mutableStateOf(false) }
 
+    // Sooner
+    // TODO: Move checked items to the bottom/Add toggle for showing or hiding checked
+
+    // Later
     // TODO: Add sort - Sort alphabetically
     // TODO: Swipe to delete
-    // TODO: Move checked items to the bottom/Add toggle for showing or hiding checked
     // TODO: Add ability to click TodoListScreen to unfocus active text field
 
     LaunchedEffect(key1 = focused) {
         if (!focused && initialized) {
-            if (todoText.isBlank()) {
+            if (prayerText.isBlank()) {
                 onDeleteItem()
             } else {
-                onChanged(todoItem.copy(text = todoText))
+                onChanged(prayerItem.copy(text = prayerText))
             }
         }
 
@@ -75,13 +77,13 @@ fun TodoCard(
             modifier = Modifier.padding(end = 10.dp)
         ) {
             Checkbox(
-                checked = todoItem.completed,
-                onCheckedChange = { onChanged(todoItem.copy(completed = it)) }
+                checked = prayerItem.completed,
+                onCheckedChange = { onChanged(prayerItem.copy(completed = it)) }
             )
             TextField(
                 modifier = Modifier.weight(1f).focusRequester(focusRequester),
-                value = todoText,
-                onValueChange = { todoText = it },
+                value = prayerText,
+                onValueChange = { prayerText = it },
                 singleLine = true,
                 colors = TextFieldDefaults.textFieldColors(
                     focusedIndicatorColor = Color.Transparent,
@@ -93,12 +95,12 @@ fun TodoCard(
                     capitalization = KeyboardCapitalization.Sentences
                 ),
                 keyboardActions = KeyboardActions(onDone = {
-                    onChanged(todoItem.copy(text = todoText))
+                    onChanged(prayerItem.copy(text = prayerText))
                 })
             )
             Icon(
                 imageVector = ImageVector.vectorResource(id = R.drawable.trash),
-                contentDescription = "Delete todo",
+                contentDescription = "Delete prayer",
                 tint = MaterialTheme.colorScheme.error,
                 modifier = Modifier
                     .clickable(onClick = onDeleteItem)
@@ -110,9 +112,9 @@ fun TodoCard(
 
 @Preview
 @Composable
-fun TodoCardPreview() {
-    TodoCard(
-        todoItem = TodoItem("Hello, world!"),
+fun PrayerCardPreview() {
+    PrayerCard(
+        prayerItem = PrayerItem("Hello, world!"),
         onChanged = {},
         onDeleteItem = {}
     )
