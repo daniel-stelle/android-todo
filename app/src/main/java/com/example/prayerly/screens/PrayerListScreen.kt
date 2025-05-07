@@ -1,5 +1,6 @@
 package com.example.prayerly.screens
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -69,6 +70,7 @@ fun PrayerListScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PrayerListContainer(
     prayerListState: PrayerListState,
@@ -86,6 +88,7 @@ fun PrayerListContainer(
         ) {
             items(prayerListState.prayerItems, { it.guid }) { item ->
                 PrayerCard(
+                    modifier = Modifier.animateItemPlacement(),
                     prayerItem = item,
                     onChanged = { prayerItem -> onItemUpdated(prayerItem) },
                     onDeleteItem = { onDeleteItem(item) }
