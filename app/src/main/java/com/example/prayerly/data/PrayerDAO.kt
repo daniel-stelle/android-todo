@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PrayerDAO {
-    @Query("SELECT * FROM PrayerItem ORDER BY createdAt")
+    @Query("SELECT * FROM PrayerItem ORDER BY completed, createdAt")
     fun getPrayerItems(): Flow<List<PrayerItem>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
